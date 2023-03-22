@@ -7,6 +7,14 @@ ARG MODEL_URL='https://huggingface.co/runwayml/stable-diffusion-v1-5/resolve/mai
 # access token (https://huggingface.co/settings/tokens) below:
 ARG HF_TOKEN=''
 
+# AWS Configuration
+ARG AWS_REGION=''
+ARG AWS_ACCESS_KEY=''
+ARG AWS_SECRET_ACCESS_KEY=''
+ARG BUCKET_NAME=''
+ARG YAML_OBJECT_KEY=''
+ARG CKPT_OBJECT_KEY=''
+
 RUN apt update && apt-get -y install git wget \
     python3.10 python3.10-venv python3-pip \
     build-essential libgl-dev libglib2.0-0 vim
@@ -23,23 +31,30 @@ WORKDIR /app/stable-diffusion-webui
 ENV MODEL_URL=${MODEL_URL}
 ENV HF_TOKEN=${HF_TOKEN}
 
+ENV AWS_REGION=${AWS_REGION}
+ENV AWS_ACCESS_KEY=${AWS_ACCESS_KEY}
+ENV AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+ENV BUCKET_NAME=${BUCKET_NAME}
+ENV YAML_OBJECT_KEY=${YAML_OBJECT_KEY}
+ENV CKPT_OBJECT_KEY=${CKPT_OBJECT_KEY}
+
 ADD requirements.txt requirements.txt
 RUN pip3 install -r requirements.txt
 
 ADD download_checkpoint.py .
 RUN python download_checkpoint.py
 
-# ADD prepare.py .
-# RUN python prepare.py --skip-torch-cuda-test --xformers --reinstall-torch --reinstall-xformers
+ADD prepare.py .
+RUN python prepare.py --skip-torch-cuda-test --xformers --reinstall-torch --reinstall-xformers
 
-# ADD download.py download.py
-# RUN python download.py --use-cpu=all
+ADD download.py download.py
+RUN python download.py --use-cpu=all
 
-# RUN pip install dill
+RUN pip install dill
 
-# RUN mkdir -p extensions/banana/scripts
-# ADD script.py extensions/banana/scripts/banana.py
-# ADD app.py app.py
-# ADD server.py server.py
+RUN mkdir -p extensions/banana/scripts
+ADD script.py extensions/banana/scripts/banana.py
+ADD app.py app.py
+ADD server.py server.py
 
-# CMD ["python", "server.py", "--xformers", "--disable-safe-unpickle", "--lowram", "--no-hashing", "--listen", "--port", "8000"]
+CMD ["python", "server.py", "--xformers", "--disable-safe-unpickle", "--lowram", "--no-hashing", "--listen", "--port", "8000"]
