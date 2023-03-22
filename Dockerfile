@@ -23,21 +23,23 @@ WORKDIR /app/stable-diffusion-webui
 ENV MODEL_URL=${MODEL_URL}
 ENV HF_TOKEN=${HF_TOKEN}
 
-RUN pip install tqdm requests
+ADD requirements.txt requirements.txt
+RUN pip3 install -r requirements.txt
+
 ADD download_checkpoint.py .
 RUN python download_checkpoint.py
 
-ADD prepare.py .
-RUN python prepare.py --skip-torch-cuda-test --xformers --reinstall-torch --reinstall-xformers
+# ADD prepare.py .
+# RUN python prepare.py --skip-torch-cuda-test --xformers --reinstall-torch --reinstall-xformers
 
-ADD download.py download.py
-RUN python download.py --use-cpu=all
+# ADD download.py download.py
+# RUN python download.py --use-cpu=all
 
-RUN pip install dill
+# RUN pip install dill
 
-RUN mkdir -p extensions/banana/scripts
-ADD script.py extensions/banana/scripts/banana.py
-ADD app.py app.py
-ADD server.py server.py
+# RUN mkdir -p extensions/banana/scripts
+# ADD script.py extensions/banana/scripts/banana.py
+# ADD app.py app.py
+# ADD server.py server.py
 
-CMD ["python", "server.py", "--xformers", "--disable-safe-unpickle", "--lowram", "--no-hashing", "--listen", "--port", "8000"]
+# CMD ["python", "server.py", "--xformers", "--disable-safe-unpickle", "--lowram", "--no-hashing", "--listen", "--port", "8000"]
