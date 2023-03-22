@@ -81,7 +81,7 @@ def download_other_file(MODEL_URL):
 def download_model():
     if BUCKET_NAME:
         download_s3_file()
-    else if 'huggingface.co' in MODEL_URL:
+    elif 'huggingface.co' in MODEL_URL:
         if '/blob/' in MODEL_URL:
             MODEL_URL = MODEL_URL.replace('/blob/', '/resolve/')
         download_hf_file()
