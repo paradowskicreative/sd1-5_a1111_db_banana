@@ -9,7 +9,6 @@ AWS_REGION = os.environ.get('AWS_REGION', '')
 AWS_ACCESS_KEY = os.environ.get('AWS_ACCESS_KEY', '')
 AWS_SECRET_ACCESS_KEY = os.environ.get('AWS_SECRET_ACCESS_KEY', '')
 BUCKET_NAME = os.environ.get('BUCKET_NAME', '')
-YAML_OBJECT_KEY = os.environ.get('YAML_OBJECT_KEY', '')
 CKPT_OBJECT_KEY = os.environ.get('CKPT_OBJECT_KEY', '')
 
 MODEL_URL = os.environ.get('MODEL_URL', )
@@ -33,14 +32,12 @@ def download_s3_file():
 	print('download_s3_file')
 	filename = get_filename('')
 	print("Model URL:", (BUCKET_NAME + '/' + CKPT_OBJECT_KEY))
+    print("Download Location:", filename)
 	if not AWS_REGION or not AWS_ACCESS_KEY or not AWS_SECRET_ACCESS_KEY:
 		print('AWS_REGION AWS_ACCESS_KEY or AWS_SECRET_ACCESS_KEY not provided')
 	time.sleep(1)
 	s3 = boto3.resource(service_name='s3', region_name=AWS_REGION, aws_access_key_id=AWS_ACCESS_KEY, aws_secret_access_key=AWS_SECRET_ACCESS_KEY)
 	bucket = s3.Bucket(BUCKET_NAME)
-
-	if YAML_OBJECT_KEY:
-		bucket.download_file(YAML_OBJECT_KEY, os.path.join('models/Stable-diffusion/model.yaml'))
 
 	bucket.download_file(CKPT_OBJECT_KEY, os.path.join(filename))
 	check_model_file(filename)
@@ -64,7 +61,7 @@ def download_hf_file():
                 progress.update(len(chunk))
     check_model_file(filename)
 
-def download_other_file(MODEL_URL):
+def download_other_file():
     filename = get_filename(MODEL_URL)
     print("Model URL:", MODEL_URL)
     print("Download Location:", filename)
